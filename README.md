@@ -8,7 +8,8 @@ Small program to make working with ratios a bit easier.
 ## Usage
 
 - After downloading & getting mix dependencies...
-- run "iex -S PATH/TO/ratio_calc.ex"
+- cd into the ratio_calc directory
+- run "iex -S mix"
 - in iex start the calculator with "RatioCalc.start()"
 - (optionally) alias calculator functions with "import RatioCalc"
 - use set_dimensions, get_state, and get_visual
