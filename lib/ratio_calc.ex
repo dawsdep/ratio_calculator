@@ -69,9 +69,21 @@ defmodule RatioCalc do
     end
   end
 
-  def get_visual() do
-    %{h: h, w: w} = get_all_state()
+  defp view_dimensions() do
+    view_size = 30
+    %{h: h, w: w, ratio: ratio} = get_all_state()
+    if h > w do
+      %{h: view_size, w: round(view_size / (ratio / 100))}
+    else if w > h do
+      %{h: round(view_size * (ratio / 100)), w: view_size}
+    else
+      %{h: view_size, w: view_size}
+    end
+    end
+  end
 
+  def get_visual() do
+    %{h: h, w: w} = view_dimensions()
     h_char = "│"
     w_char = "─"
     w_multiplier = 2
