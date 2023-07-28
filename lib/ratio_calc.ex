@@ -70,7 +70,7 @@ defmodule RatioCalc do
   end
 
   defp view_dimensions() do
-    view_size = 30
+    view_size = 25
     %{h: h, w: w, ratio: ratio} = get_all_state()
     if h > w do
       %{h: view_size, w: round(view_size / (ratio / 100))}
