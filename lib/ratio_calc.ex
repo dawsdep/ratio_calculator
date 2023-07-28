@@ -76,6 +76,8 @@ defmodule RatioCalc do
     w_char = "─"
     w_multiplier = 2
     w_constant = div(w, 3)
+    # just using a multiplier of 2 brings w & h close to each other in size
+    # also using a constant a third of w brings w & h VERY close to each other in size
     w_value = (w * w_multiplier) + w_constant
 
     w_line = String.duplicate(w_char, w_value)
