@@ -10,7 +10,7 @@ Small program to make working with ratios a bit easier.
 - After downloading & getting mix dependencies...
 - cd into the ratio_calc directory
 - run "iex -S mix"
-- in iex start the calculator with "RatioCalc.start()"
+- in iex, start the calculator with "RatioCalc.start()"
 - (optionally) alias calculator functions with "import RatioCalc"
 - (optionally) set h & w variables in the iex session to make changes as easy as re-running "set_dimensions(%{h: h, w: w})"
 - use get_state, get_visual, and set_dimensions
