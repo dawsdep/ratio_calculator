@@ -12,7 +12,7 @@ Small program to make working with ratios a bit easier.
 - run "iex -S mix"
 - in iex start the calculator with "RatioCalc.start()"
 - (optionally) alias calculator functions with "import RatioCalc"
-- use set_dimensions, get_state, and get_visual
+- use get_visual, get_state, and set_dimensions
 
 ## RatioCalc.start(initial_state)
 
