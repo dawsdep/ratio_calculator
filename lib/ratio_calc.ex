@@ -1,64 +1,62 @@
+# add state/options to run something everytime state is set
+# ex: get_visual & get_state
+# add ability to just return output once after running one command on the termninal
+#   ex: ratio_calc h 20 w 20 => 100%
+# left off... cant get args from "iex -S mix arg1 arg2" into System.argv
+
+defmodule RatioCalc.Supervisor do
+  use Application
+
+  def start(_, _) do
+    children = [RatioCalc]
+    Supervisor.start_link(children, strategy: :one_for_one)
+  end
+end
+
 defmodule RatioCalc do
+  use Agent
+
   @default_dimensions %{h: 9, w: 16}
-  def start(%{h: h, w: w}) do
-    Agent.start_link(fn -> %{h: h, w: w} end, name: __MODULE__)
-    calc_ratio()
+
+  def start_link(%{h: h, w: w}) do
+    ratio = calc_ratio(h, w)
+    Agent.start_link(fn -> %{h: h, w: w, ratio: ratio} end, name: __MODULE__)
   end
-  def start(%{h: h}) do
-    Agent.start_link(fn -> %{h: h, w: @default_dimensions.w} end, name: __MODULE__)
-    calc_ratio()
+  def start_link(%{h: h}) do
+    ratio = calc_ratio(h, @default_dimensions.w)
+    Agent.start_link(fn -> %{h: h, w: @default_dimensions.w, ratio: ratio} end, name: __MODULE__)
   end
-  def start(%{w: w}) do
-    Agent.start_link(fn -> %{h: @default_dimensions.h, w: w} end, name: __MODULE__)
-    calc_ratio()
+  def start_link(%{w: w}) do
+    ratio = calc_ratio(@default_dimensions.h, w)
+    Agent.start_link(fn -> %{h: @default_dimensions.h, w: w, ratio: ratio} end, name: __MODULE__)
   end
-  def start(_) do
-    Agent.start_link(fn -> @default_dimensions end, name: __MODULE__)
-    calc_ratio()
-  end
-  def start() do
-    Agent.start_link(fn -> @default_dimensions end, name: __MODULE__)
-    calc_ratio()
+  def start_link(_) do
+    IO.inspect(System.argv())
+    ratio = calc_ratio(@default_dimensions.h, @default_dimensions.w)
+    Agent.start_link(fn -> %{h: @default_dimensions.h, w: @default_dimensions.w, ratio: ratio} end, name: __MODULE__)
   end
 
-  defp calc_ratio() do
-    %{h: h, w: w} = get_all_state()
-    ratio = (h / w) * 100
-    set_state(%{ratio: ratio})
+  defp calc_ratio(h, w) do
+    (h / w) * 100
   end
 
   defp get_all_state do
     Agent.get(__MODULE__, &(&1))
   end
 
-  defp set_state(%{h: h, w: w}) do
-    Agent.update(__MODULE__, fn _ -> %{h: h, w: w} end)
-    calc_ratio()
-  end
-  defp set_state(%{h: h}) do
-    %{w: w} = get_all_state()
-    Agent.update(__MODULE__, fn _ -> %{h: h, w: w} end)
-    calc_ratio()
-  end
-  defp set_state(%{w: w}) do
-    %{h: h} = get_all_state()
-    Agent.update(__MODULE__, fn _ -> %{h: h, w: w} end)
-    calc_ratio()
-  end
-  defp set_state(%{ratio: ratio}) do
-    state = get_all_state()
-    merged_state = Map.merge(%{ratio: ratio}, state, fn _, new, _ -> new end)
-    Agent.update(__MODULE__, fn _ -> merged_state end)
-  end
-
   def set_dimensions(%{h: h, w: w}) do
-    set_state(%{h: h, w: w})
+    ratio = calc_ratio(h, w)
+    Agent.update(__MODULE__, fn _ -> %{h: h, w: w, ratio: ratio} end)
   end
   def set_dimensions(%{h: h}) do
-    set_state(%{h: h})
+    %{w: w} = get_all_state()
+    ratio = calc_ratio(h, w)
+    Agent.update(__MODULE__, fn _ -> %{h: h, w: w, ratio: ratio} end)
   end
   def set_dimensions(%{w: w}) do
-    set_state(%{w: w})
+    %{h: h} = get_all_state()
+    ratio = calc_ratio(h, w)
+    Agent.update(__MODULE__, fn _ -> %{h: h, w: w, ratio: ratio} end)
   end
 
   def get_state(fields \\ nil) do
